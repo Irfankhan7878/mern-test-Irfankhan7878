@@ -1,6 +1,8 @@
 // Register page UI will be implemented here
 
 import { useState } from 'react';
+import API from '../services/api';
+import { useNavigate } from 'react-router-dom';
 
 function Register() {
   const [form, setForm] = useState({ name: '', email: '', password: '' });
@@ -9,10 +11,23 @@ function Register() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Registration logic will go here
-    alert('Registered! (UI only)');
+    try {
+      const res = await API.post('/auth/register', form);
+      // Optionally, auto-login after register (if backend returns token)
+      if (res.data.token) {
+        localStorage.setItem('token', res.data.token);
+        navigate('/dashboard');
+      } else {
+        alert('Registered! Now login.');
+        navigate('/login');
+      }
+    } catch (err) {
+      alert(err.response?.data?.message || 'Registration failed');
+    }
   };
 
   return (

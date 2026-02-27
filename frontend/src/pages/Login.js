@@ -1,6 +1,8 @@
 // Login page UI will be implemented here
 
 import { useState } from 'react';
+import API from '../services/api';
+import { useNavigate } from 'react-router-dom';
 
 function Login() {
   const [form, setForm] = useState({ email: '', password: '' });
@@ -9,10 +11,21 @@ function Login() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Login logic will go here
-    alert('Logged in! (UI only)');
+    try {
+      const res = await API.post('/auth/login', form);
+      if (res.data.token) {
+        localStorage.setItem('token', res.data.token);
+        navigate('/dashboard');
+      } else {
+        alert('Login failed: No token received');
+      }
+    } catch (err) {
+      alert(err.response?.data?.message || 'Login failed');
+    }
   };
 
   return (
