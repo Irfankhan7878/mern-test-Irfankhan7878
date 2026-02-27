@@ -29,3 +29,4 @@ app.listen(PORT, () => {
 });
 
 app.use('/api/auth', require('./routes/auth'));
+app.use('/api/courses', require('./routes/course'));
